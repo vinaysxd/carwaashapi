@@ -9,6 +9,7 @@ const bookingsRoutes = require('./src/routes/bookings');
 const jobsRoutes = require('./src/routes/jobs');
 const adminRoutes = require('./src/routes/admin');
 const notificationsRoutes = require('./src/routes/notifications');
+const profileRoutes = require('./src/services/profile/routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,7 @@ app.use('/api/v1/bookings', bookingsRoutes);
 app.use('/api/v1/jobs', jobsRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/notifications', notificationsRoutes);
+app.use('/api/v1/profile', profileRoutes);
 
 app.listen(PORT, () => {
   console.log(`splashwash-api running on port ${PORT}`);
