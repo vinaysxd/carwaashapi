@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 
+const morgan = require('morgan');
+const { generalLimiter } = require('./src/middleware/rateLimiter');
 const notFound = require('./src/middleware/notFound');
 const errorHandler = require('./src/middleware/errorHandler');
 
@@ -24,6 +26,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
 app.use(cors());
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(generalLimiter);
 app.use(express.json());
 
 app.get('/health', (req, res) => {
