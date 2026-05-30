@@ -1,4 +1,5 @@
 const staffService = require('./service');
+const { getPaginationParams, paginatedResponse } = require('../../utils/pagination');
 
 async function createStaff(req, res) {
   try {
@@ -15,8 +16,9 @@ async function createStaff(req, res) {
 
 async function getAllStaff(req, res) {
   try {
-    const result = await staffService.getAllStaff();
-    res.json(result);
+    const { page, limit, offset } = getPaginationParams(req.query);
+    const { staff, total } = await staffService.getAllStaff({ limit, offset });
+    res.json({ success: true, ...paginatedResponse(staff, total, page, limit) });
   } catch (err) {
     res.status(err.status || 500).json({ success: false, message: err.message });
   }

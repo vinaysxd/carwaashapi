@@ -10,14 +10,15 @@ async function createVehicle(user_id, { make, model, colour, plate_number }) {
   return { success: true, vehicle };
 }
 
-async function getVehicles(user_id) {
-  const { data: vehicles, error } = await supabase
+async function getVehicles(user_id, { limit, offset }) {
+  const { data: vehicles, count, error } = await supabase
     .from('vehicles')
-    .select('*')
+    .select('*', { count: 'exact' })
     .eq('user_id', user_id)
-    .eq('is_active', true);
+    .eq('is_active', true)
+    .range(offset, offset + limit - 1);
   if (error) throw new Error(error.message);
-  return { success: true, vehicles };
+  return { vehicles, total: count };
 }
 
 async function getVehicleById(id, user_id) {

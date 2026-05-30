@@ -1,4 +1,5 @@
 const buildingService = require('./service');
+const { getPaginationParams, paginatedResponse } = require('../../utils/pagination');
 
 async function createBuilding(req, res) {
   try {
@@ -15,8 +16,9 @@ async function createBuilding(req, res) {
 
 async function getBuildings(req, res) {
   try {
-    const result = await buildingService.getBuildings();
-    res.json(result);
+    const { page, limit, offset } = getPaginationParams(req.query);
+    const { buildings, total } = await buildingService.getBuildings({ limit, offset });
+    res.json({ success: true, ...paginatedResponse(buildings, total, page, limit) });
   } catch (err) {
     res.status(err.status || 500).json({ success: false, message: err.message });
   }

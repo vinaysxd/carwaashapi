@@ -34,23 +34,23 @@ async function createStaff(admin_id, { name, phone_number, building_id }) {
   return { success: true, staff };
 }
 
-async function getAllStaff() {
-  const { data: staffProfiles, error: staffErr } = await supabase
+async function getAllStaff({ limit, offset }) {
+  const { data: staffProfiles, count, error: staffErr } = await supabase
     .from('staff_profiles')
-    .select('*');
+    .select('*', { count: 'exact' })
+    .range(offset, offset + limit - 1);
   if (staffErr) throw new Error(staffErr.message);
 
   const userIds = staffProfiles.map((s) => s.user_id);
-  const { data: users, error: usersErr } = await supabase
-    .from('users')
-    .select('id, phone_number')
-    .in('id', userIds);
+  const { data: users, error: usersErr } = userIds.length
+    ? await supabase.from('users').select('id, phone_number').in('id', userIds)
+    : { data: [], error: null };
   if (usersErr) throw new Error(usersErr.message);
 
   const phoneByUserId = Object.fromEntries(users.map((u) => [u.id, u.phone_number]));
   const staff = staffProfiles.map((s) => ({ ...s, phone_number: phoneByUserId[s.user_id] ?? null }));
 
-  return { success: true, staff };
+  return { staff, total: count };
 }
 
 async function getStaffById(id) {

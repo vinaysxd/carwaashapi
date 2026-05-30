@@ -1,4 +1,5 @@
 const vehicleService = require('./service');
+const { getPaginationParams, paginatedResponse } = require('../../utils/pagination');
 
 async function createVehicle(req, res) {
   try {
@@ -15,8 +16,9 @@ async function createVehicle(req, res) {
 
 async function getVehicles(req, res) {
   try {
-    const result = await vehicleService.getVehicles(req.user.id);
-    res.json(result);
+    const { page, limit, offset } = getPaginationParams(req.query);
+    const { vehicles, total } = await vehicleService.getVehicles(req.user.id, { limit, offset });
+    res.json({ success: true, ...paginatedResponse(vehicles, total, page, limit) });
   } catch (err) {
     res.status(err.status || 500).json({ success: false, message: err.message });
   }

@@ -10,13 +10,14 @@ async function createBuilding(admin_id, { name, address, city, total_levels }) {
   return { success: true, building };
 }
 
-async function getBuildings() {
-  const { data: buildings, error } = await supabase
+async function getBuildings({ limit, offset }) {
+  const { data: buildings, count, error } = await supabase
     .from('buildings')
-    .select('*')
-    .eq('is_active', true);
+    .select('*', { count: 'exact' })
+    .eq('is_active', true)
+    .range(offset, offset + limit - 1);
   if (error) throw new Error(error.message);
-  return { success: true, buildings };
+  return { buildings, total: count };
 }
 
 async function getBuildingById(id) {
