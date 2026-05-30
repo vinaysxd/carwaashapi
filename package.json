@@ -19,6 +19,8 @@
     "express": "^5.2.1",
     "firebase-admin": "^13.10.0",
     "helmet": "^8.2.0",
+    "knex": "^3.2.10",
+    "pg": "^8.21.0",
     "razorpay": "^2.9.6",
     "resend": "^6.12.3"
   }
