@@ -4,7 +4,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 
 const morgan = require('morgan');
+const swaggerUi = require('swagger-ui-express');
 const corsOptions = require('./src/config/cors');
+const swaggerSpec = require('./src/config/swagger');
 const { generalLimiter } = require('./src/middleware/rateLimiter');
 const notFound = require('./src/middleware/notFound');
 const errorHandler = require('./src/middleware/errorHandler');
@@ -32,6 +34,8 @@ app.use(generalLimiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'splashwash-api', version: '1.0.0' });
 });
@@ -54,4 +58,5 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`splashwash-api running on port ${PORT}`);
+  console.log(`API docs available at http://localhost:${PORT}/api/docs`);
 });

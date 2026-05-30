@@ -25,6 +25,8 @@
     "morgan": "^1.10.1",
     "pg": "^8.21.0",
     "razorpay": "^2.9.6",
-    "resend": "^6.12.3"
+    "resend": "^6.12.3",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
   }
 }
