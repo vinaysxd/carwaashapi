@@ -3,6 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 
+const notFound = require('./src/middleware/notFound');
+const errorHandler = require('./src/middleware/errorHandler');
+
 const authRoutes = require('./src/routes/auth');
 const usersRoutes = require('./src/routes/users');
 const bookingsRoutes = require('./src/routes/bookings');
@@ -39,6 +42,9 @@ app.use('/api/v1/staff', staffRoutes);
 app.use('/api/v1/vehicles', vehicleRoutes);
 app.use('/api/v1/subscriptions', subscriptionRoutes);
 app.use('/api/v1/presence', presenceRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`splashwash-api running on port ${PORT}`);
