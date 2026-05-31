@@ -23,6 +23,7 @@ const staffRoutes = require('./src/services/staff/routes');
 const vehicleRoutes = require('./src/services/vehicle/routes');
 const subscriptionRoutes = require('./src/services/subscription/routes');
 const presenceRoutes = require('./src/services/presence/routes');
+const paymentRoutes = require('./src/services/payment/routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -52,6 +53,7 @@ app.use('/api/v1/staff', staffRoutes);
 app.use('/api/v1/vehicles', vehicleRoutes);
 app.use('/api/v1/subscriptions', subscriptionRoutes);
 app.use('/api/v1/presence', presenceRoutes);
+app.use('/api/v1/payments', paymentRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
