@@ -1,4 +1,5 @@
 const supabase = require('../supabase');
+const { notifyBookingConfirmed, notifyBookingCancelled } = require('../notification/service');
 
 const SLOTS = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
 const SLOT_CAPACITY = 2;
@@ -206,6 +207,9 @@ async function cancelBooking(id, user_id) {
 
   const { error } = await supabase.from('bookings').update({ status: 'cancelled' }).eq('id', id);
   if (error) throw new Error(error.message);
+
+  notifyBookingCancelled(id).catch(err => console.error('notifyBookingCancelled failed:', err.message));
+
   return { success: true, message: 'Booking cancelled successfully' };
 }
 
@@ -224,6 +228,9 @@ async function confirmKeyDrop(id, user_id) {
     .update({ key_dropped: true, key_drop_time: new Date().toISOString(), status: 'confirmed' })
     .eq('id', id);
   if (error) throw new Error(error.message);
+
+  notifyBookingConfirmed(id).catch(err => console.error('notifyBookingConfirmed failed:', err.message));
+
   return { success: true, message: 'Key drop confirmed' };
 }
 

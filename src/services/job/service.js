@@ -1,4 +1,5 @@
 const supabase = require('../supabase');
+const { notifyJobComplete } = require('../notification/service');
 
 function today() {
   return new Date().toISOString().split('T')[0];
@@ -103,6 +104,8 @@ async function completeJob(id, staff_id) {
       .update({ status: 'completed' })
       .eq('id', job.booking_id);
   }
+
+  notifyJobComplete(id).catch(err => console.error('notifyJobComplete failed:', err));
 
   return { success: true, message: 'Job completed' };
 }

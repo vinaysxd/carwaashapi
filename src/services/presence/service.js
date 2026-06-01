@@ -1,4 +1,5 @@
 const supabase = require('../supabase');
+const { notifyJobAssigned } = require('../notification/service');
 
 function today() {
   return new Date().toISOString().split('T')[0];
@@ -62,6 +63,8 @@ async function checkIn(user_id, { building_id, coordinates }) {
     .select('id, job_type, status')
     .single();
   if (jobErr) throw new Error(jobErr.message);
+
+  notifyJobAssigned(job.id).catch(err => console.error('notifyJobAssigned failed:', err.message));
 
   return { success: true, message: 'Checked in successfully', presence, job };
 }
