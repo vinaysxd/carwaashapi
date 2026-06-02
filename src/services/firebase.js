@@ -1,10 +1,13 @@
 
 const admin = require('firebase-admin');
-const serviceAccount = require('../../firebase-service-account.json');
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+  admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+} else {
+  const serviceAccount = require('../../firebase-service-account.json');
+  admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+}
 
 async function sendPushNotification(deviceToken, title, body) {
   const message = {

@@ -15,6 +15,8 @@ const required = [
   'RESEND_API_KEY',
 ];
 
+// FIREBASE_SERVICE_ACCOUNT_JSON is optional — local dev uses firebase-service-account.json file
+
 const missing = required.filter((key) => !process.env[key]);
 
 if (missing.length > 0) {
