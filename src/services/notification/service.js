@@ -1,6 +1,6 @@
 const supabase = require('../supabase');
 const sendOTP = require('../fast2sms');
-const sendFirebasePush = require('../firebase');
+const firebaseAdmin = require('../firebase');
 const axios = require('axios');
 
 const FAST2SMS_API_KEY = process.env.FAST2SMS_API_KEY;
@@ -33,7 +33,7 @@ async function sendPushNotification(user_id, title, body) {
 
   let firebaseResult = null;
   try {
-    firebaseResult = await sendFirebasePush(user.fcm_token, title, body);
+    firebaseResult = await firebaseAdmin.messaging().send({ notification: { title, body }, token: user.fcm_token });
   } catch (err) {
     console.error('Firebase push failed:', err.message);
   }
@@ -115,7 +115,7 @@ async function notifyJobComplete(job_id) {
 
     if (user?.fcm_token) {
       try {
-        await sendFirebasePush(user.fcm_token, title, message);
+        await firebaseAdmin.messaging().send({ notification: { title, body: message }, token: user.fcm_token });
       } catch (err) {
         console.error('Firebase push failed for notifyJobComplete:', err);
       }
