@@ -4,6 +4,11 @@ const axios = require('axios');
 const FAST2SMS_API_KEY = process.env.FAST2SMS_API_KEY;
 
 async function sendOTP(phoneNumber, otp) {
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[DEV MODE] OTP for ${phoneNumber}: ${otp}`);
+    return { return: true, message: 'OTP logged to console (dev mode)' };
+  }
+
   try {
     const response = await axios({
       method: 'GET',
@@ -17,7 +22,6 @@ async function sendOTP(phoneNumber, otp) {
         numbers: phoneNumber,
       },
     });
-    console.log(response.data);
     return response.data;
   } catch (err) {
     console.error(err.response ? err.response.data : err.message);
