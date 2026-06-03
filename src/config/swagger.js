@@ -4,11 +4,15 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'SplashWash API',
+      title: 'Carwaash API',
       version: '1.0.0',
-      description: 'SplashWash car washing service API',
+      description: 'Complete API documentation for Carwaash.in car washing service',
     },
     servers: [
+      {
+        url: 'https://carwaashapi-production.up.railway.app/api/v1',
+        description: 'Production server',
+      },
       {
         url: 'http://localhost:3000/api/v1',
         description: 'Development server',
