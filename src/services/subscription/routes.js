@@ -146,14 +146,22 @@ router.post('/', auth, customerOnly, validate(v.createSubscription), controller.
  * @swagger
  * /subscriptions/my:
  *   get:
- *     summary: Get my active subscription
- *     description: Customer-only. Returns the customer's current active subscription.
+ *     summary: Get my subscriptions
+ *     description: Customer-only. Returns all subscriptions for the authenticated customer, optionally filtered by status.
  *     tags: [Subscriptions]
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [pending, active, paused, cancelled]
+ *         description: Filter subscriptions by status
  *     responses:
  *       200:
- *         description: Subscription details
+ *         description: List of subscriptions
  *         content:
  *           application/json:
  *             schema:
@@ -162,18 +170,25 @@ router.post('/', auth, customerOnly, validate(v.createSubscription), controller.
  *                 success:
  *                   type: boolean
  *                   example: true
- *                 subscription:
- *                   $ref: '#/components/schemas/Subscription'
+ *                 subscriptions:
+ *                   type: array
+ *                   items:
+ *                     allOf:
+ *                       - $ref: '#/components/schemas/Subscription'
+ *                       - type: object
+ *                         properties:
+ *                           plan:
+ *                             type: object
+ *                           vehicle:
+ *                             type: object
  *       401:
  *         description: Unauthorized
  *       403:
  *         description: Forbidden
- *       404:
- *         description: No active subscription found
  *       500:
  *         description: Internal server error
  */
-router.get('/my', auth, customerOnly, controller.getMySubscription);
+router.get('/my', auth, customerOnly, controller.getMySubscriptions);
 
 /**
  * @swagger

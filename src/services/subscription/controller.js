@@ -23,9 +23,9 @@ async function createSubscription(req, res) {
   }
 }
 
-async function getMySubscription(req, res) {
+async function getMySubscriptions(req, res) {
   try {
-    const result = await subscriptionService.getMySubscription(req.user.id);
+    const result = await subscriptionService.getMySubscriptions(req.user.id, req.query.status);
     res.json(result);
   } catch (err) {
     res.status(err.status || 500).json({ success: false, message: err.message });
@@ -50,4 +50,4 @@ async function cancelSubscription(req, res) {
   }
 }
 
-module.exports = { getPlans, createSubscription, getMySubscription, pauseSubscription, cancelSubscription };
+module.exports = { getPlans, createSubscription, getMySubscriptions, pauseSubscription, cancelSubscription };

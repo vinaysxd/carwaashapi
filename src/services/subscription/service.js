@@ -53,7 +53,7 @@ console.log("=-working 12")
     .limit(1)
     .single();
   if (existingErr && existingErr.code !== 'PGRST116') throw new Error(existingErr.message);
-  if (existing) throw Object.assign(new Error('You already have an active subscription for this vehicle. Please cancel it before creating a new one.'), { status: 400 });
+  if (existing) throw Object.assign(new Error('This vehicle already has an active subscription'), { status: 400 });
   let days;
   if (plan.days_per_week === 5) {
     days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
@@ -122,33 +122,37 @@ console.log("=-working 12")
   };
 }
 
-async function getMySubscription(user_id) {
-  const { data: subscription, error: subErr } = await supabase
+async function getMySubscriptions(user_id, status) {
+  let query = supabase
     .from('subscriptions')
     .select('*')
     .eq('user_id', user_id)
-    .eq('status', 'active')
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
+    .order('created_at', { ascending: false });
+
+  if (status) query = query.eq('status', status);
+
+  const { data: subscriptions, error: subErr } = await query;
   if (subErr) throw new Error(subErr.message);
-  if (!subscription) throw Object.assign(new Error('No active subscription found'), { status: 404 });
 
-  const { data: plan, error: planErr } = await supabase
-    .from('subscription_plans')
-    .select('*')
-    .eq('id', subscription.plan_id)
-    .single();
-  if (planErr) throw new Error(planErr.message);
+  const enriched = await Promise.all(subscriptions.map(async (subscription) => {
+    const { data: plan, error: planErr } = await supabase
+      .from('subscription_plans')
+      .select('*')
+      .eq('id', subscription.plan_id)
+      .single();
+    if (planErr) throw new Error(planErr.message);
 
-  const { data: vehicle, error: vehicleErr } = await supabase
-    .from('vehicles')
-    .select('*')
-    .eq('id', subscription.vehicle_id)
-    .single();
-  if (vehicleErr) throw new Error(vehicleErr.message);
+    const { data: vehicle, error: vehicleErr } = await supabase
+      .from('vehicles')
+      .select('*')
+      .eq('id', subscription.vehicle_id)
+      .single();
+    if (vehicleErr) throw new Error(vehicleErr.message);
 
-  return { success: true, subscription: { ...subscription, plan, vehicle } };
+    return { ...subscription, plan, vehicle };
+  }));
+
+  return { success: true, subscriptions: enriched };
 }
 
 async function pauseSubscription(id, user_id) {
@@ -181,4 +185,4 @@ async function cancelSubscription(id, user_id) {
   return { success: true, message: 'Subscription cancelled successfully' };
 }
 
-module.exports = { getPlans, createSubscription, getMySubscription, pauseSubscription, cancelSubscription };
+module.exports = { getPlans, createSubscription, getMySubscriptions, pauseSubscription, cancelSubscription };
