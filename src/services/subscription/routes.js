@@ -85,7 +85,7 @@ router.get('/plans', controller.getPlans);
  *                 format: uuid
  *     responses:
  *       201:
- *         description: Subscription created
+ *         description: Subscription created in pending state — becomes active after payment verification
  *         content:
  *           application/json:
  *             schema:
@@ -95,7 +95,42 @@ router.get('/plans', controller.getPlans);
  *                   type: boolean
  *                   example: true
  *                 subscription:
- *                   $ref: '#/components/schemas/Subscription'
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     plan_id:
+ *                       type: string
+ *                       format: uuid
+ *                     vehicle_id:
+ *                       type: string
+ *                       format: uuid
+ *                     status:
+ *                       type: string
+ *                       enum: [pending]
+ *                       example: pending
+ *                     qr_code:
+ *                       type: string
+ *                       nullable: true
+ *                       example: null
+ *                     activated_at:
+ *                       type: string
+ *                       format: date-time
+ *                       nullable: true
+ *                       example: null
+ *                     end_date:
+ *                       type: string
+ *                       format: date
+ *                       nullable: true
+ *                       example: null
+ *                     start_date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2026-06-04"
+ *                     price_after_discount:
+ *                       type: number
+ *                       example: 1499
  *       400:
  *         description: Validation error or active subscription already exists
  *       401:
@@ -252,16 +287,26 @@ module.exports = router;
  *           format: uuid
  *         status:
  *           type: string
- *           enum: [active, paused, cancelled]
+ *           enum: [pending, active, paused, cancelled]
  *           example: active
+ *         qr_code:
+ *           type: string
+ *           nullable: true
+ *           example: "550e8400-e29b-41d4-a716-446655440000"
  *         start_date:
  *           type: string
  *           format: date
- *           example: "2026-06-01"
+ *           example: "2026-06-04"
+ *         activated_at:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           example: "2026-06-04T10:00:00.000Z"
  *         end_date:
  *           type: string
  *           format: date
- *           example: "2026-07-01"
+ *           nullable: true
+ *           example: "2026-07-04"
  *         created_at:
  *           type: string
  *           format: date-time

@@ -2,6 +2,8 @@ require('./src/config/env');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const fs = require('fs');
+const path = require('path');
 
 const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
@@ -30,7 +32,15 @@ const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
 app.use(cors(corsOptions));
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+if (process.env.NODE_ENV === 'production') {
+  const accessLogStream = fs.createWriteStream(
+    path.join(__dirname, 'src/logs/access.log'),
+    { flags: 'a' }
+  );
+  app.use(morgan('combined', { stream: accessLogStream }));
+} else {
+  app.use(morgan('dev'));
+}
 app.use(generalLimiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));

@@ -1,5 +1,6 @@
 const { randomUUID } = require('crypto');
 const supabase = require('../supabase');
+
 console.log('[service] supabase client:', typeof supabase, Object.keys(supabase));
 
 async function getPlans() {
@@ -86,10 +87,9 @@ console.log("=-working 12")
     coupon_id = coupon.id;
   }
 
-  const qr_code = randomUUID();
   const start_date = new Date().toISOString().split('T')[0];
   console.log("=-working 1")
-  const insertPayload = { user_id, plan_id, vehicle_id, building_id, selected_days: days, qr_code, start_date, status: 'active', price_after_discount, coupon_id };
+  const insertPayload = { user_id, plan_id, vehicle_id, building_id, selected_days: days, start_date, status: 'pending', price_after_discount, coupon_id, activated_at: null, end_date: null };
   console.log('[createSubscription] incoming data before insert:', JSON.stringify(insertPayload));
 
   console.log('[createSubscription] query: INSERT INTO subscriptions SELECT id WHERE payload =', JSON.stringify(insertPayload));
@@ -104,7 +104,7 @@ console.log("=-working 12")
   console.log('[createSubscription] query: SELECT FROM subscriptions WHERE id =', inserted.id);
   const { data: subscription, error: subErr } = await supabase
     .from('subscriptions')
-    .select('id, plan_id, vehicle_id, qr_code, selected_days, start_date, status, price_after_discount')
+    .select('id, plan_id, vehicle_id, qr_code, selected_days, start_date, activated_at, end_date, status, price_after_discount')
     .eq('id', inserted.id)
     .single();
   console.log('[createSubscription] fetch response | data:', JSON.stringify(subscription), '| error:', JSON.stringify(subErr));

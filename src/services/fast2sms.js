@@ -2,28 +2,30 @@ require('dotenv').config();
 const axios = require('axios');
 
 const FAST2SMS_API_KEY = process.env.FAST2SMS_API_KEY;
+const FAST2SMS_SENDER_ID = process.env.FAST2SMS_SENDER_ID;
+const FAST2SMS_TEMPLATE_ID = process.env.FAST2SMS_TEMPLATE_ID;
 
 async function sendOTP(phoneNumber, otp) {
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`[DEV MODE] OTP for ${phoneNumber}: ${otp}`);
-    return { return: true, message: 'OTP logged to console (dev mode)' };
-  }
-
+  console.log(`=>Your OTP is ${otp}. Valid for 5 minutes. Do not share this code with anyone. - Carwaash`)
   try {
+var params =  {
+    authorization: FAST2SMS_API_KEY,
+    sender_id: FAST2SMS_SENDER_ID,
+    message: FAST2SMS_TEMPLATE_ID,
+    variables_values: `${otp}|5|Carwaash`,
+    route: 'dlt',
+    numbers: phoneNumber,
+  }
+  console.log(params)
     const response = await axios({
-      method: 'GET',
-      url: 'https://www.fast2sms.com/dev/bulkV2',
-      params: {
-        authorization: FAST2SMS_API_KEY,
-        route: 'q',
-        message: `Your SplashWash OTP is ${otp}`,
-        language: 'english',
-        flash: 0,
-        numbers: phoneNumber,
-      },
-    });
+  method: 'GET',
+  url: 'https://www.fast2sms.com/dev/bulkV2',
+  params: params
+});
+
+    
     return response.data;
-  } catch (err) {
+  } catch (err) { 
     console.error(err.response ? err.response.data : err.message);
     throw err;
   }

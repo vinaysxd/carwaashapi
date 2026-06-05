@@ -76,7 +76,11 @@ router.post('/create-order', auth, customerOnly, controller.createOrder);
  * /payments/verify:
  *   post:
  *     summary: Verify a Razorpay payment
- *     description: Verifies the Razorpay payment signature after checkout and marks the booking as paid.
+ *     description: >
+ *       Verifies the Razorpay payment signature after checkout. For subscription payments,
+ *       this activates the subscription — sets status to active, records activated_at (now),
+ *       calculates end_date (1 month from activated_at), and generates the QR code UUID.
+ *       For booking payments, marks the booking as confirmed.
  *     tags: [Payments]
  *     security:
  *       - BearerAuth: []
@@ -86,7 +90,7 @@ router.post('/create-order', auth, customerOnly, controller.createOrder);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [razorpay_order_id, razorpay_payment_id, razorpay_signature, booking_id]
+ *             required: [razorpay_order_id, razorpay_payment_id, razorpay_signature, payment_id]
  *             properties:
  *               razorpay_order_id:
  *                 type: string
@@ -97,12 +101,13 @@ router.post('/create-order', auth, customerOnly, controller.createOrder);
  *               razorpay_signature:
  *                 type: string
  *                 example: a1b2c3d4e5f6...
- *               booking_id:
+ *               payment_id:
  *                 type: string
  *                 format: uuid
+ *                 description: Internal payment record ID returned by POST /payments/create-order
  *     responses:
  *       200:
- *         description: Payment verified and booking confirmed
+ *         description: Payment verified. Subscription activated (status=active, activated_at set, end_date set, qr_code generated) or booking confirmed.
  *         content:
  *           application/json:
  *             schema:
@@ -118,6 +123,8 @@ router.post('/create-order', auth, customerOnly, controller.createOrder);
  *         description: Invalid payment signature
  *       401:
  *         description: Unauthorized
+ *       404:
+ *         description: Payment record not found
  *       500:
  *         description: Internal server error
  */

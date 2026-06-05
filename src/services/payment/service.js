@@ -58,7 +58,15 @@ async function verifyPayment({ razorpay_order_id, razorpay_payment_id, razorpay_
   if (updateErr) throw new Error(updateErr.message);
 
   if (payment.subscription_id) {
-    await supabase.from('subscriptions').update({ status: 'active' }).eq('id', payment.subscription_id);
+    const activatedAt = new Date();
+    const endDate = new Date(activatedAt);
+    endDate.setMonth(endDate.getMonth() + 1);
+    await supabase.from('subscriptions').update({
+      status: 'active',
+      activated_at: activatedAt.toISOString(),
+      end_date: endDate.toISOString().split('T')[0],
+      qr_code: crypto.randomUUID(),
+    }).eq('id', payment.subscription_id);
   }
   if (payment.booking_id) {
     await supabase.from('bookings').update({ status: 'confirmed' }).eq('id', payment.booking_id);
