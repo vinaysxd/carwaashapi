@@ -1,8 +1,7 @@
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:19006',
-  'https://splashwash.in',
-  'https://admin.splashwash.in',
+  'https://api.carwaash.in'
 ];
 
 const corsOptions = {
