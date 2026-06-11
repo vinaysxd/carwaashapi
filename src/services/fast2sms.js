@@ -6,7 +6,7 @@ const FAST2SMS_SENDER_ID = process.env.FAST2SMS_SENDER_ID;
 const FAST2SMS_TEMPLATE_ID = process.env.FAST2SMS_TEMPLATE_ID;
 const FAST2SMS_MESSAGE_ID = process.env.FAST2SMS_MESSAGE_ID
 
-async function sendOTP(phoneNumber, otp) { 
+async function sendOTP(phoneNumber, otp) {  
 var url = `https://www.fast2sms.com/dev/bulkV2?authorization=${FAST2SMS_API_KEY}&sender_id=${FAST2SMS_SENDER_ID}&message=${FAST2SMS_MESSAGE_ID}&variables_values=${otp}%7C10%7CCarwaash&route=dlt&numbers=${phoneNumber}`
 console.log("URL: ",url)
 const options = {

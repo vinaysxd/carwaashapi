@@ -1,7 +1,7 @@
 const paymentService = require('./service');
 const { getPaginationParams, paginatedResponse } = require('../../utils/pagination');
 
-async function createOrder(req, res, next) {
+async function createOrder(req, res, next) { 
   try {
     const { amount, payment_type, subscription_id, booking_id } = req.body;
     const result = await paymentService.createOrder(req.user.id, {
